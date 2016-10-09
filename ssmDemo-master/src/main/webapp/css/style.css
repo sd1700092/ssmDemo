@@ -1,0 +1,7 @@
+h1,h2,h3,h4,h5,h6,p{padding: 0px;margin:0px}
+div{width:180px; margin:0 auto;border:1px solid gray;padding: 6px;}
+div h2{background-color:#000;color:#fff;padding:2px;text-align:center;}
+div p{background:#ddd; padding: 5px}
+div h4, div h3{backgroud:gray;padding: 6px;}
+div span{color:red;}
+p input{width:80px;}

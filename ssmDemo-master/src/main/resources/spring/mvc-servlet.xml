@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+	<bean	class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<!-- 允许JVM参数覆盖 -->
+		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+		<!-- 忽略没有找到的资源文件 -->
+		<property name="ignoreResourceNotFound" value="true" />
+		<!-- 配置资源文件 -->
+		<property name="locations">
+			<list>
+				<value>classpath:app.properties</value>
+			</list>
+		</property>
+	</bean>
+
+    <!--  读取jdbc配置文件  -->
+    <util:properties id="jdbc" location="classpath:db.properties"/>
+
+
+
+    <!--  Spring JDBC配置开始  -->
+    <!--  配置数据库连接池dataSource，使用开源的数据库连接池c3p0  -->
+    <bean id="ds" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="driverClass" value="#{jdbc.driver}"/>
+        <property name="jdbcUrl" value="#{jdbc.url}"/>
+        <property name="user" value="#{jdbc.user}"/>
+        <property name="password" value="#{jdbc.pwd}"/>
+        <property name="maxPoolSize" value="#{jdbc.maxPoolSize}"/>
+        <property name="minPoolSize" value="#{jdbc.minPoolSize}"/>
+    </bean>
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+
+    <mvc:interceptors>
+        <!--<mvc:interceptor>-->
+            <!--<mvc:mapping path="/*/*"/>-->
+            <!--<mvc:exclude-mapping path="/login/*"/>-->
+            <!--<bean class="com.tarena.web.AccessInterceptor"/>-->
+        <!--</mvc:interceptor>-->
+        <mvc:interceptor>
+            <mvc:mapping path="/interceptor/*"/>
+            <mvc:exclude-mapping path="/login/*"/>
+            <bean class="com.tarena.web.DemoInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+    <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        <property name="exceptionMappings">
+            <props>
+                <prop key="java.lang.Exception">error</prop>
+                <prop key="com.tarena.web.DemoException">error</prop>
+            </props>
+        </property>
+    </bean>
+
+
+	<!-- 注解驱动 -->
+	<mvc:annotation-driven />
+
+	<context:component-scan base-package="com.tarena" />
+	<context:component-scan base-package="cn.gxufe.ssm.demo.controller" />
+
+	<!-- 定义视图解析器 -->
+	<!--<bean-->
+			<!--class="org.springframework.web.servlet.view.InternalResourceViewResolver">-->
+		<!--<property name="prefix" value="/WEB-INF/jsp/" />-->
+		<!--<property name="suffix" value=".jsp" />-->
+		<!--&lt;!&ndash; 查找顺序 &ndash;&gt;-->
+		<!--<property name="order" value="2" />-->
+	<!--</bean>-->
+
+    <!--  达内项目  -->
+    <!--<bean id="handlerMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">-->
+    <!--<property name="mappings" ref="mapping"/>-->
+    <!--</bean>-->
+    <!--<util:properties id="mapping">-->
+    <!--&lt;!&ndash;  在web上请求/hello.form的时候执行helloController Bean-->
+    <!--对象的方法handleRequest  &ndash;&gt;-->
+    <!--<prop key="/hello.form">helloController</prop>-->
+    <!--</util:properties>-->
+
+    <!--  打开文件上传功能支持  -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize"
+                  value="102400"/>
+        <!--  指定在控制器中处理异常  -->
+        <property name="resolveLazily" value="true"/>
+    </bean>
+
+    <!--  控制器对象  -->
+    <bean id="helloController" class="com.tarena.web.HelloController"/>
+
+    <!--  视图处理器  -->
+    <!--  将"hello"映射到/WEB-INF/jsp/hello.jsp  -->
+    <bean id="view" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+    <property name="prefix" value="/WEB-INF/jsp/"/>
+    <property name="suffix" value=".jsp"/>
+    </bean>
+
+</beans>

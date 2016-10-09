@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--  namespace的值是DeptMapper接口，每个Mapper接口对应一个配置文件  -->
+<mapper namespace="com.tarena.entity.DeptMapper">
+    <insert id="addDept" parameterType="com.tarena.entity.Dept">
+
+        insert into T_DEPT(dname, loc) VALUES(#{dname},#{loc})
+    </insert>
+    <delete id="deleteDept" parameterType="com.tarena.entity.Dept">
+        DELETE FROM t_dept WHERE deptno = #{deptno}
+    </delete>
+    <select id="findDeptById" parameterType="java.lang.Integer"
+    resultType="com.tarena.entity.Dept">
+        SELECT deptno, dname, loc FROM t_dept WHERE deptno = #{deptno}
+    </select>
+    <update id="updateDept" parameterType="com.tarena.entity.Dept">
+--
+        UPDATE t_dept SET dname=#{dname}, loc = #{loc} WHERE deptno=#{deptno}
+    </update>
+    <!--  注意resultType的值是List中元素类型结果集行映射的数据类型  -->
+    <select id="findAllDept" resultType="com.tarena.entity.Dept">
+        SELECT deptno, dname, loc FROM T_DEPT
+    </select>
+
+    <select id="findDeptByLoc" parameterType="java.lang.String"
+            resultType="com.tarena.entity.Dept">
+        SELECT deptno, dname, loc FROM t_dept WHERE loc=#{loc}
+    </select>
+
+    <select id="findAllDname" parameterType="java.lang.String" resultType="java.util.Map">
+        select dname from t_dept where loc=#{loc}
+    </select>
+</mapper>
